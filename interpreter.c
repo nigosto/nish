@@ -172,11 +172,8 @@ int main() {
         close(1);
         dup(fd[i * 2 + 1]);
 
-        int j;
-        for (j = 0; j < commands_count - 1; ++j) {
-          close(fd[i * 2]);
-          close(fd[i * 2 + 1]);
-        }
+        close(fd[i * 2]);
+        close(fd[i * 2 + 1]);
 
         if (execvp(commands[i][0], commands[i]) == -1) {
           write(out, "\nInvalid command\n", 17);
