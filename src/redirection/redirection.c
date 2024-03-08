@@ -18,7 +18,7 @@ void redirect_input(char *file, redirection_t redirection) {
   if (redirection == IN_REDIRECTION) {
     close(0);
     if (open(file, O_RDONLY) == -1) {
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
 }
@@ -27,7 +27,7 @@ void redirect_output(char *file, redirection_t redirection) {
   if (redirection == OUT_REDIRECTION) {
     close(1);
     if (open(file, O_WRONLY | O_CREAT | O_TRUNC, 0744) == -1) {
-      exit(1);
+      exit(EXIT_FAILURE);
     }
   }
 }

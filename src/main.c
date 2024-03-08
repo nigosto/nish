@@ -1,16 +1,18 @@
 
 #include "lexer/lexer.h"
+#include "libs/messages/messages.h"
 #include "parser/parser.h"
 #include "pipe/pipe.h"
 #include "redirection/redirection.h"
 #include "utils/utils.h"
 #include <stdlib.h>
+#include <string.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
 int main() {
-  while (1) {
-    int out = dup(1), status, i;
+  while (true) {
+    int out = dup(1), i;
 
     write(1, "> ", 2);
 
@@ -18,7 +20,7 @@ int main() {
     lexemes_t lexemes = parse_lexems(command);
 
     if (end_session(lexemes)) {
-      write(1, "Exitting command interpreter...\n", 33);
+      write(1, ENDING_SESSION_MESSAGE, strlen(ENDING_SESSION_MESSAGE));
       free(command);
       free_lexemes(lexemes);
       break;
@@ -41,8 +43,7 @@ int main() {
       redirect_input(file, redirection);
 
       if (commands_count > 1) {
-        close(1);
-        dup(pipes[1]);
+        pipe_output(pipes, 1);
         close_pipe_fds(pipes, commands_count);
       } else {
         redirect_output(file, redirection);
@@ -57,15 +58,13 @@ int main() {
       if (commands_count > 1) {
         close(pipes[1]);
       }
-      int child = wait(&status);
+      wait(NULL);
     }
 
     for (i = 1; i < commands_count - 1; ++i) {
       if (fork() == 0) {
-        close(0);
-        dup(pipes[(i - 1) * 2]);
-        close(1);
-        dup(pipes[i * 2 + 1]);
+        pipe_input(pipes, (i - 1) * 2);
+        pipe_output(pipes, i * 2 + 1);
 
         close(pipes[i * 2]);
         close(pipes[i * 2 + 1]);
@@ -73,15 +72,13 @@ int main() {
         execute_command(command_list, i, out);
       } else {
         close(pipes[(i - 1) * 2 + 1]);
-
-        int child = wait(&status);
+        wait(NULL);
       }
     }
 
     if (commands_count > 1) {
       if (fork() == 0) {
-        close(0);
-        dup(pipes[(commands_count - 2) * 2]);
+        pipe_input(pipes, (commands_count - 2) * 2);
         close_pipe_fds(pipes, commands_count);
 
         redirect_output(file, redirection);
@@ -91,18 +88,16 @@ int main() {
         close_pipe_fds(pipes, commands_count);
 
         if (!start_in_background) {
-          wait(&status);
+          wait(NULL);
         }
       }
     }
 
     free(pipes);
-
     free_commands_list(command_list);
-
     free(command);
     free_lexemes(lexemes);
   }
 
-  return 0;
+  return EXIT_SUCCESS;
 }

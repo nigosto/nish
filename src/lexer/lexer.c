@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include "../utils/utils.h"
+#include "../libs/messages/messages.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -18,7 +19,7 @@ void assign_input(char **dest, const char *src, int count, int alloc) {
   tmp_dest = realloc(*dest, 256 * alloc * sizeof(char));
 
   if (!tmp_dest) {
-    write(2, "Error: not enough memory!", 26);
+    write(2, NOT_ENOUGH_MEMORY_MESSAGE, strlen(NOT_ENOUGH_MEMORY_MESSAGE));
     exit(EXIT_FAILURE);
   }
 
@@ -55,7 +56,7 @@ lexemes_t init_lexemes() {
 
 char* at(lexemes_t lexemes, size_t index) {
   if(index >= lexemes->size) {
-    write(2, "Error: index out of range!", 27);
+    write(2, INDEX_OUT_OF_RANGE_MESSAGE, strlen(INDEX_OUT_OF_RANGE_MESSAGE));
     exit(EXIT_FAILURE);
   }
 
@@ -72,7 +73,7 @@ void push_lexeme(lexemes_t lexemes, char* token) {
     char** tmp_data = realloc(lexemes->data, lexemes->capacity * sizeof(char*));
     
     if(!tmp_data) {
-      write(2, "Error: not enough memory!", 26);
+      write(2, NOT_ENOUGH_MEMORY_MESSAGE, strlen(NOT_ENOUGH_MEMORY_MESSAGE));
       exit(EXIT_FAILURE);
     }
 

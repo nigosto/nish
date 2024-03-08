@@ -1,4 +1,5 @@
 #include "parser.h"
+#include "../libs/messages/messages.h"
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -29,7 +30,7 @@ void push_command(command_list_t command_list, lexemes_t lexemes) {
         realloc(command_list->data, command_list->capacity * sizeof(lexemes_t));
 
     if (!tmp_data) {
-      write(2, "Error: not enough memory!", 26);
+      write(2, NOT_ENOUGH_MEMORY_MESSAGE, strlen(NOT_ENOUGH_MEMORY_MESSAGE));
       exit(EXIT_FAILURE);
     }
 
@@ -80,9 +81,9 @@ void execute_command(command_list_t command_list, size_t index, int error) {
   char** command = to_command(lexemes);
 
   if (execvp(at(lexemes, 0), command) == -1) {
-    write(error, "\nInvalid command\n", 17);
+    write(error, INVALID_COMMAND_MESSAGE, strlen(INVALID_COMMAND_MESSAGE));
 
-    exit(1);
+    exit(EXIT_FAILURE);
   }
 }
 
