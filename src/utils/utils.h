@@ -5,4 +5,6 @@
 
 bool delimiter(char);
 
+void display_pid(int, int);
+
 #endif

@@ -2,6 +2,8 @@
 #include "lexer/lexer.h"
 #include "parser/parser.h"
 #include "pipe/pipe.h"
+#include "redirection/redirection.h"
+#include "utils/utils.h"
 #include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,32 +12,48 @@
 
 int main() {
   while (1) {
-    int out = dup(1), status;
-    
+    int out = dup(1), status, i;
+
     write(1, "> ", 2);
 
     char *command = read_command();
-    lexemes_t lexems = parse_lexems(command);
+    lexemes_t lexemes = parse_lexems(command);
 
-    if (end_session(lexems)) {
+    if (end_session(lexemes)) {
       write(1, "Exitting command interpreter...\n", 33);
       free(command);
-      free_lexemes(lexems);
+      free_lexemes(lexemes);
       break;
     }
 
-    command_list_t command_list = separate_commands(lexems);
+    bool start_in_background = check_for_background_process(lexemes);
+    if (start_in_background) {
+      remove_lexemes(lexemes, 1);
+    }
+
+    redirection_t redirection = check_for_redirection(lexemes);
+    char *file = extract_file(lexemes, redirection);
+
+    command_list_t command_list = separate_commands(lexemes);
     size_t commands_count = commands_size(command_list);
 
-    int* pipes = create_pipe_fds(command_list);
+    int *pipes = create_pipe_fds(command_list);
 
     if (fork() == 0) {
+      redirect_input(file, redirection);
+
       if (commands_count > 1) {
         close(1);
         dup(pipes[1]);
         close_pipe_fds(pipes, commands_count);
+      } else {
+        redirect_output(file, redirection);
       }
 
+      if (start_in_background) {
+        display_pid(out, getpid());
+      }
+      
       execute_command(command_list, 0, out);
     } else {
       if (commands_count > 1) {
@@ -44,7 +62,6 @@ int main() {
       int child = wait(&status);
     }
 
-    int i;
     for (i = 1; i < commands_count - 1; ++i) {
       if (fork() == 0) {
         close(0);
@@ -69,9 +86,15 @@ int main() {
         dup(pipes[(commands_count - 2) * 2]);
         close_pipe_fds(pipes, commands_count);
 
+        redirect_output(file, redirection);
+
         execute_command(command_list, commands_count - 1, 1);
       } else {
         close_pipe_fds(pipes, commands_count);
+
+        if (!start_in_background) {
+          wait(&status);
+        }
       }
     }
 
@@ -80,7 +103,7 @@ int main() {
     free_commands_list(command_list);
 
     free(command);
-    free_lexemes(lexems);
+    free_lexemes(lexemes);
   }
 
   return 0;

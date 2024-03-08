@@ -87,10 +87,32 @@ void print_commands(command_list_t command_list) {
 void execute_command(command_list_t command_list, size_t index, int error) {
   lexemes_t lexemes = command_list->data[index];
   char** command = to_command(lexemes);
-  
+
   if (execvp(at(lexemes, 0), command) == -1) {
     write(error, "\nInvalid command\n", 17);
 
     exit(1);
   }
+}
+
+redirection_t check_for_redirection(lexemes_t lexemes) {
+  size_t count = size(lexemes);
+
+  if (count < 3) {
+    return NO_REDIRECTION;
+  }
+
+  if (strcmp(at(lexemes, count - 2), ">") == 0) {
+    return OUT_REDIRECTION;
+  } else if (strcmp(at(lexemes, count - 2), "<") == 0) {
+    return IN_REDIRECTION;
+  } else {
+    return NO_REDIRECTION;
+  }
+}
+
+bool check_for_background_process(lexemes_t lexemes) {
+  size_t count = size(lexemes);
+
+  return at(lexemes, count - 1)[0] == '&';
 }

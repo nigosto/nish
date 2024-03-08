@@ -126,3 +126,9 @@ char** to_command(lexemes_t lexemes) {
 
   return command;
 }
+
+void remove_lexemes(lexemes_t lexemes, size_t count) {
+  if(lexemes->size - count > 0) {
+    lexemes->size -= count;
+  }
+}
