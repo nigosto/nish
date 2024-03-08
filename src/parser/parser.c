@@ -1,6 +1,4 @@
 #include "parser.h"
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -75,13 +73,6 @@ void free_commands_list(command_list_t command_list) {
   }
   free(command_list->data);
   free(command_list);
-}
-
-void print_commands(command_list_t command_list) {
-  int i;
-  for (i = 0; i < command_list->size; ++i) {
-    print_lexemes(command_list->data[i]);
-  }
 }
 
 void execute_command(command_list_t command_list, size_t index, int error) {

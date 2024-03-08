@@ -1,7 +1,6 @@
 #include "redirection.h"
 #include <fcntl.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
 
 char *extract_file(lexemes_t lexemes, redirection_t redirection) {

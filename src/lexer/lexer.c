@@ -1,7 +1,6 @@
 #include "lexer.h"
 #include "../utils/utils.h"
 #include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -105,14 +104,6 @@ lexemes_t parse_lexems(char* command) {
   }
 
   return lexemes;
-}
-
-void print_lexemes(lexemes_t lexemes) {
-  int i;
-  for (i = 0; i < lexemes->size; ++i) {
-    printf("%s ", lexemes->data[i]);
-  }
-  printf("\n");
 }
 
 char** to_command(lexemes_t lexemes) {

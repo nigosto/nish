@@ -21,8 +21,6 @@ void push_lexeme(lexemes_t, char*);
 
 void free_lexemes(lexemes_t);
 
-void print_lexemes(lexemes_t);
-
 char** to_command(lexemes_t);
 
 void remove_lexemes(lexemes_t, size_t);

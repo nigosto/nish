@@ -4,8 +4,6 @@
 #include "pipe/pipe.h"
 #include "redirection/redirection.h"
 #include "utils/utils.h"
-#include <stddef.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <sys/wait.h>
 #include <unistd.h>
@@ -53,7 +51,7 @@ int main() {
       if (start_in_background) {
         display_pid(out, getpid());
       }
-      
+
       execute_command(command_list, 0, out);
     } else {
       if (commands_count > 1) {
