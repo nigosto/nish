@@ -1,6 +1,6 @@
 
 #include "lexer/lexer.h"
-#include "libs/messages/messages.h"
+#include "../libs/messages/messages.h"
 #include "parser/parser.h"
 #include "pipe/pipe.h"
 #include "redirection/redirection.h"

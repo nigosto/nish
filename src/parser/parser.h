@@ -1,7 +1,7 @@
 #ifndef PARSER_HPP
 #define PARSER_HPP
 
-#include "../libs/bool.h"
+#include "../../libs/bool.h"
 #include "../lexer/lexer.h"
 #include "../redirection/redirection.h"
 

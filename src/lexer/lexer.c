@@ -1,6 +1,6 @@
 #include "lexer.h"
 #include "../utils/utils.h"
-#include "../libs/messages/messages.h"
+#include "../../libs/messages/messages.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
